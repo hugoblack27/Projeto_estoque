@@ -68,7 +68,7 @@ produtoform.addEventListener("submit", (event) => {
         imagem: imagem.value
     };
 
-     kbjkjbçkj b
+     
 
 
     // aguardando esses dados  novos na lista 
