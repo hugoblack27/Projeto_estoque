@@ -5,12 +5,14 @@ const preco = document.getElementById("preco");
 const quantidade = document.getElementById("quantidade");
 const imagem = document.getElementById("imagem");
 const produtoform = document.getElementById("produto-form");
-
+const notificacao = document.getElementById("notificacao-conteudo");
 // Criando funções
 // function testeEnvio(){
 //     console.log("Enviando Formulário")
 // };
 
+// escondendo as notificação até ela ser chamada
+notificacao.style.display = "none";
 
 // lista para armazenar os dados do formulario
 const categorias = []
@@ -19,47 +21,74 @@ const precos = []
 const quantidades = []
 
 
+// função para exibir uma notificacao
+function exibirNotificacao(mensagem, status,) {
+    const messageE1 = document.getElementById("notificacao-mensagem");
+
+    // ele é responsavel por alterar o texto guardado no mensageE1
+    // ou seja, o que esta dentro do spam do HTML 
+    messageE1.textContent = mensagem;
+
+    if (status === "sucesso") {
+        notificacao.style.backgroundColor = "#dbead5";
+        messageE1.style.color = "#103900";
+    } else if (status === "alerta") {
+        notificacao.style.backgroundColor = "#ffffa0";
+        messageE1.style.color = "#646600";
+    } else if (status === "erro") {
+        notificacao.style.backgroundColor = "#fb6866";
+        messageE1.style.color = "#470300";
+    }
+
+    notificacao.style.display = "block";
+
+    // esconde a notificacao depois de 3 segundos 
+    setTimeout(() => { notificacao.style.display = "none" }
+        , 3000);
+
+}
+
 // Criando função de um jeito diferente
 //produtoform.addEventListener("submit", () => {} ); 
 produtoform.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    let campopreenchido =  true
+    let campopreenchido = true
 
     if (nome.value === '') {
         document.getElementById("erro-nome").style.display = 'block'
         campopreenchido = false
-    }else{
+    } else {
         document.getElementById("erro-nome").style.display = 'none'
     }
 
-    if(categoria.value === ''){
+    if (categoria.value === '') {
         document.getElementById("erro-categoria").style.display = 'block'
-        campopreenchido = false 
-    }else{
+        campopreenchido = false
+    } else {
         document.getElementById("erro-categoria").style.display = 'none'
     }
 
-    if(preco.value === ''){
+    if (preco.value === '') {
         document.getElementById("erro-preco").style.display = 'block'
-        campopreenchido = false 
-    }else{
+        campopreenchido = false
+    } else {
         document.getElementById("erro-preco").style.display = 'none'
     }
 
-    if(quantidade.value == ''){
+    if (quantidade.value == '') {
         document.getElementById('erro-quantidade').style.display = 'block'
-        campopreenchido = false 
-    }else{
+        campopreenchido = false
+    } else {
         document.getElementById('erro-quantidade').style.display = 'none'
     }
 
     // verifica se algum campo não preenchido ele encerra o evento e isso leva que a informação  incompleta seja inserida
-    if (campopreenchido == false ){
-        return
+    if (campopreenchido == false) {
+        return exibirNotificacao("Produto não adicionado","erro");
     }
 
-// Criando um objeto para armazenar os dados do formulario
+    // Criando um objeto para armazenar os dados do formulario
     const produtoInserido = {
         nome: nome.value,
         categoria: categoria.value,
@@ -68,7 +97,7 @@ produtoform.addEventListener("submit", (event) => {
         imagem: imagem.value
     };
 
-     
+
 
 
     // aguardando esses dados  novos na lista 
@@ -77,6 +106,12 @@ produtoform.addEventListener("submit", (event) => {
     // guardando a lista no localstorage
     // transformando so dados para json usando JSON.stringfy  
     localStorage.setItem("nomeProduto", JSON.stringify(produtos));
+
+    // limpando campos dos formularios 
+    produtoform.reset();
+
+
+    exibirNotificacao("Produto adicionado com sucesso","sucesso");
     
 
 });
