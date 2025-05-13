@@ -6,10 +6,8 @@ const quantidade = document.getElementById("quantidade");
 const imagem = document.getElementById("imagem");
 const produtoform = document.getElementById("produto-form");
 const notificacao = document.getElementById("notificacao-conteudo");
-// Criando funções
-// function testeEnvio(){
-//     console.log("Enviando Formulário")
-// };
+const tbody = document.getElementById("produtos-lista");
+
 
 // escondendo as notificação até ela ser chamada
 notificacao.style.display = "none";
@@ -17,8 +15,6 @@ notificacao.style.display = "none";
 // lista para armazenar os dados do formulario
 const categorias = []
 const produtos = []
-const precos = []
-const quantidades = []
 
 
 // função para exibir uma notificacao
@@ -48,11 +44,7 @@ function exibirNotificacao(mensagem, status,) {
 
 }
 
-// Criando função de um jeito diferente
-//produtoform.addEventListener("submit", () => {} ); 
-produtoform.addEventListener("submit", (event) => {
-    event.preventDefault();
-
+function verificacampos() {
     let campopreenchido = true
 
     if (nome.value === '') {
@@ -85,8 +77,19 @@ produtoform.addEventListener("submit", (event) => {
 
     // verifica se algum campo não preenchido ele encerra o evento e isso leva que a informação  incompleta seja inserida
     if (campopreenchido == false) {
-        return exibirNotificacao("Produto não adicionado","erro");
+        return exibirNotificacao("Produto não adicionado", "erro");
     }
+
+    exibirNotificacao("Produto adicionado com sucesso", "sucesso");
+}
+
+
+// Criando função de um jeito diferente
+//produtoform.addEventListener("submit", () => {} ); 
+produtoform.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    verificacampos();
 
     // Criando um objeto para armazenar os dados do formulario
     const produtoInserido = {
@@ -100,18 +103,40 @@ produtoform.addEventListener("submit", (event) => {
 
 
 
+    // pegando os produtos que já foram salvos no localsatorage
+    let produtoSalvos = JSON.parse(localStorage.getItem("nomeProduto")) || [];
+
     // aguardando esses dados  novos na lista 
-    produtos.push(produtoInserido);
+    produtoSalvos.push(produtoInserido);
 
     // guardando a lista no localstorage
     // transformando so dados para json usando JSON.stringfy  
-    localStorage.setItem("nomeProduto", JSON.stringify(produtos));
+    localStorage.setItem("nomeProduto", JSON.stringify(produtoSalvos));
 
     // limpando campos dos formularios 
     produtoform.reset();
 
-
-    exibirNotificacao("Produto adicionado com sucesso","sucesso");
-    
-
 });
+
+
+function adicionarItemTabela() {
+
+    let produtos = JSON.parse(localStorage.getItem("nomeProduto")) || [];
+
+    let valoresTabela = "";
+
+    produtos.forEach(produto => {
+        console.log(produto)
+        valoresTabela += 
+        `<tr>
+         <td></td>
+         <td>${produto.nome}</td>
+         <td>${produto.categoria}</td>
+         <td>${produto.preco}</td>
+         <td>${produto.quantidade}</td>
+    </tr>`;
+    });
+
+    tbody.innerHTML = valoresTabela
+       
+}
