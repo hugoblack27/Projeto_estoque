@@ -43,8 +43,11 @@ function exibirNotificacao(mensagem, status,) {
         , 3000);
 
 }
+let quantCampopreen = 0
 
 function verificacampos() {
+
+    quantCampopreen = 0
     let campopreenchido = true
 
     if (nome.value === '') {
@@ -52,35 +55,36 @@ function verificacampos() {
         campopreenchido = false
     } else {
         document.getElementById("erro-nome").style.display = 'none'
+        quantCampopreen += 1;
     }
-
+    
     if (categoria.value === '') {
         document.getElementById("erro-categoria").style.display = 'block'
         campopreenchido = false
     } else {
         document.getElementById("erro-categoria").style.display = 'none'
+        quantCampopreen += 1;
     }
-
+    
     if (preco.value === '') {
         document.getElementById("erro-preco").style.display = 'block'
         campopreenchido = false
     } else {
         document.getElementById("erro-preco").style.display = 'none'
+        quantCampopreen += 1;
     }
-
-    if (quantidade.value == '') {
+    
+    if (quantidade.value == '' || quantidade.value == 0) {
         document.getElementById('erro-quantidade').style.display = 'block'
         campopreenchido = false
     } else {
         document.getElementById('erro-quantidade').style.display = 'none'
+        quantCampopreen += 1;
     }
 
-    // verifica se algum campo não preenchido ele encerra o evento e isso leva que a informação  incompleta seja inserida
-    if (campopreenchido == false) {
-        return exibirNotificacao("Produto não adicionado", "erro");
-    }
+    
 
-    exibirNotificacao("Produto adicionado com sucesso", "sucesso");
+    return campopreenchido;
 }
 
 
@@ -89,7 +93,24 @@ function verificacampos() {
 produtoform.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    verificacampos();
+    // let preen = 0;
+    
+    // if (preco.value !== "") preen++; 
+    // if (quantidade.value !== '') preen++;
+    // if (categoria.value !== '' ) preen++;
+    // if (nome.value !== '') preen++;
+
+
+    if(verificacampos() == false && quantCampopreen == 0){
+        exibirNotificacao("Nenhum produto adicionado", "erro");
+        return; 
+    }else if(verificacampos() == false && quantCampopreen < 4){
+        exibirNotificacao("Ainda falta preencher campos", "alerta");
+        return;
+    }
+
+
+    exibirNotificacao("Produto adicionado com sucesso", "sucesso");
 
     // Criando um objeto para armazenar os dados do formulario
     const produtoInserido = {
@@ -101,27 +122,38 @@ produtoform.addEventListener("submit", (event) => {
     };
 
 
-
-
+    
+    
     // pegando os produtos que já foram salvos no localsatorage
     let produtoSalvos = JSON.parse(localStorage.getItem("nomeProduto")) || [];
-
+    
     // aguardando esses dados  novos na lista 
     produtoSalvos.push(produtoInserido);
-
+    
     // guardando a lista no localstorage
     // transformando so dados para json usando JSON.stringfy  
     localStorage.setItem("nomeProduto", JSON.stringify(produtoSalvos));
-
+    
     // limpando campos dos formularios 
     produtoform.reset();
+    
+    // colocando o item na tabela
+    
+    adicionarItemTabela();
 
 });
 
 
 function adicionarItemTabela() {
+    
+    const semprodutosdiv = document.getElementById("sem-produtos");
 
     let produtos = JSON.parse(localStorage.getItem("nomeProduto")) || [];
+
+    if (produtos.length > 0){
+        
+        semprodutosdiv.style.display = 'none';  
+    }
 
     let valoresTabela = "";
 
@@ -138,5 +170,5 @@ function adicionarItemTabela() {
     });
 
     tbody.innerHTML = valoresTabela
-       
 }
+
